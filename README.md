@@ -1,16 +1,10 @@
 # DetectRiverIce
-**Project:** Alaska Ecological Conservation   
-
-**Node:** Massachusetts - Boston  
-
-**Term:** Spring 2024  
-
-**Team:** Christian Sarro (Project Lead), Mahnoor Naeem, Levi Mitchell, Ben Silver  
+**Project:** Alaskan River Ice Detection Through NASA Imagery
 
 **Code Contact:** Ben Silver, [benjaminsilver17@gmail.com]       
 
 ## Introduction  
-Our team developed this code to analyze annual ice cover between 2017 and 2023. Google Earth
+My team developed this code to analyze annual ice cover between 2017 and 2023. Google Earth
 Engine (GEE) was used to process satellite imagery and calculate various spectral reflectance
 indices for identifying ice. The analysis yielded various plots and maps depicting ice coverage
 quantities, formation date, and phase changes throughout the study area.
@@ -37,19 +31,7 @@ The team used Google Earth Engine and R for image processing, analysis, and visu
 ### Languages
 Google Earth Engine scripts were written in JavaScript, and R scripts were written in R.
 
-### Packages
-What other libraries or software packages does it rely on?  
-- List packages or software required for the code to work
-- R
-    - `ggplot2`
-    - `readxl`
-	- `lubridate`
-	- `tidyverse`
-	- `splines`
-	- `magrittr`
-
 ## Parameters
-Describe any steps needed for the script to run. It will help to specify which line in the code will need to be changed by the user based on their needs.  
 
 1. Acquire Google Earth Engine login
 2. Load satellite imagery
@@ -69,6 +51,8 @@ See the GEE Datasets Catalog (https://developers.google.com/earth-engine/dataset
 GEE technical support. For R function documentation, visit https://www.rdocumentation.org/
 
 ## Acknowledgments
-- Dr. Cedric Fichot (Boston University)
-- Seymour Zhu (Boston University)
+- Additional Team Members: Christian Sarro, Mahnoor Naem, and Levi Mitchell
+- Team Lead: Madison Arndt
+- Science Advisor: Dr. Cedric Fichot (Boston University)
+- Addtional Support: Seymour Zhu (Boston University)
 
