@@ -1,7 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Generate Ice Index Summary Tables for Sentinel 2 MSI
 // Link: https://code.earthengine.google.com/ab4910ea8689d17b08f41de69e8014d5
-// Author: Ben Silver and Levi Mitchell
 // Description: This script is used to process (cloud mask and image mosaic) and analyze (index calculations) Sentinel data over the East Kobuk River. Running this code requires a digitized river study area used for clipping satellite imagery. Note that scripts for the other river areas (West Kobuk and Colville) are identical, with the exception of the ‘geo’ variable and map center.
 // Output:
 // This code yields mean NDWI, NDII, and RDRI values for each day for pixels over the user-specified time interval
@@ -25,8 +24,6 @@ var vizParams = {
 var colors = ['red', 'yellow', 'green', 'cyan', 'blue']; //index color palette
  
 // join sentinel and cloud probability layers
-// used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
-// used code from stack overflow to clip images to region of interest https://stackoverflow.com/questions/61220828/how-to-clip-an-image-collection-to-a-feature-collections-geometry
 
 function combineData(aoi, start_date, end_date) {
   // S2 SR data
@@ -37,8 +34,6 @@ function combineData(aoi, start_date, end_date) {
     .map(function(image){return image.clip(aoi)});
 
 // Get cloud probabilities
-// used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
-// used code from stack overflow to clip images to region of interest https://stackoverflow.com/questions/61220828/how-to-clip-an-image-collection-to-a-feature-collections-geometry
   var s2_cloudless_col = ee.ImageCollection('COPERNICUS/S2_CLOUD_PROBABILITY')
     .filterBounds(aoi)
     .filterDate(start_date, end_date)
@@ -69,7 +64,6 @@ function addCloudBands(img) {
     return img.addBands(ee.Image([cloudProb, isCloud]));
 }
 var joinedData = joinedData.map(addCloudBands);
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 
 //apply cloud mask
 function maskClouds(image) {
@@ -79,7 +73,6 @@ function maskClouds(image) {
   return maskedImage;
 }
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var maskedCollection = joinedData.map(maskClouds);
 
 // // view masked image example (TODO delete)
@@ -88,7 +81,6 @@ var maskedCollection = joinedData.map(maskClouds);
 // Map.addLayer(image3, vizParams, 'Masked Image (No Mosaic)')
 
 //create mosaics for each day
-// used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var distinctDates = maskedCollection
     .map(function(image) {
       return ee.Feature(null, {'date': image.date().format('YYYY-MM-dd')});
@@ -99,14 +91,12 @@ var distinctDates = maskedCollection
 print(distinctDates)
 
 // generate mosaic function
-// used code from GIS Stack Exchange to mosaic images by date https://gis.stackexchange.com/questions/280156/mosaicking-image-collection-by-date-day-in-google-earth-engine
 var createMosaic = function(date) {
   var filtered = maskedCollection.filterDate(date, date.advance(1, 'day'));
   var mosaic = filtered.mosaic();
   return mosaic.set('system:time_start', date);  // Set all original properties to the mosaic image
 };
 
-// used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var mosaicCollection = ee.ImageCollection.fromImages(
   distinctDates.map(function(date) {
     return createMosaic(ee.Date(date));
@@ -130,7 +120,6 @@ var calculateNDWI = function(image) {
   return ndwi;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var ndwiCollection = mosaicCollection.map(calculateNDWI);
 
 // used reducer function from https://developers.google.com/earth-engine/guides/reducers_intro
@@ -148,7 +137,6 @@ var ndwiMean = function(image){
   return image;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var ndwiCollection = ndwiCollection.map(ndwiMean);
 
 // load an image (NDWI) - for testing
@@ -165,7 +153,6 @@ var calculateNDWI_SWIR = function(image) {
   return ndwi_swir;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var ndwi_swirCollection = mosaicCollection.map(calculateNDWI_SWIR);
 
 // calculate mean values over images
@@ -184,7 +171,6 @@ var ndwi_swirMean = function(image){
   return image;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var ndwi_swirCollection = ndwi_swirCollection.map(ndwi_swirMean);
 
 // load an image (NDWI SWIR)
@@ -201,10 +187,8 @@ var calculateNIR_SWIR = function(image) {
   return nir_swir;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var nir_swirCollection = mosaicCollection.map(calculateNIR_SWIR);
 
-// used reducer function from https://developers.google.com/earth-engine/guides/reducers_intro
 var nir_swirMean = function(image){
   var date = ee.Date(image.get('system:time_start')).format("YYYY-MM-dd");
   var nir_swir_mean_test = image.select('NIR_SWIR').reduceRegion({
@@ -218,7 +202,6 @@ var nir_swirMean = function(image){
   return image;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var nir_swirCollection = nir_swirCollection.map(nir_swirMean);
 
 // load an image (NIR SWIR)
@@ -239,10 +222,8 @@ var calculateRDRI = function(image) {
   return rdri;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var rdriCollection = mosaicCollection.map(calculateRDRI);
 
-// used reducer function from https://developers.google.com/earth-engine/guides/reducers_intro
 var rdriMean = function(image){
   var date = ee.Date(image.get('system:time_start')).format("YYYY-MM-dd");
   var rdri_mean_test = image.select('RDRI').reduceRegion({
@@ -256,7 +237,6 @@ var rdriMean = function(image){
   return image;
 };
 
- // used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var rdriCollection = rdriCollection.map(rdriMean);
 
 // load an image (NIR SWIR)
@@ -272,7 +252,6 @@ var ndwi_swir_list = ee.List(ndwi_swirCollection.aggregate_array("ndwi_swir_mean
 var nir_swir_list = ee.List(nir_swirCollection.aggregate_array("nir_swir_mean"));
 var rdri_list = ee.List(rdriCollection.aggregate_array("rdri_mean"));
 
-// used code from StackOverflow to iterate over image collections https://stackoverflow.com/questions/55384915/apply-a-function-over-2-consecutive-images-in-an-imagecollection-in-google-earth
 var features = ee.FeatureCollection(
   ee.List.sequence(0, dates_list.length().subtract(1)).map(function(i) {
     var listProperties = {
